@@ -1,33 +1,23 @@
-'use strict';
+// 'use strict';
+
+require('dotenv').config(); // load .env variables
 
 var express = require('express');
-var routes = require('./app/routes/index.js');
-var mongoose = require('mongoose');
-var passport = require('passport');
-var session = require('express-session');
-
 var app = express();
-require('dotenv').load();
-require('./app/config/passport')(passport);
+var routes = require('./app/routes/routes.js');
+routes(app, process.env);
 
-mongoose.connect(process.env.MONGO_URI);
+var mongoose = require('mongoose');
+var database = process.env.MONGO_URI || ('mongodb://localhost:27017/search_history');
+mongoose.connect(database);
 
-app.use('/controllers', express.static(process.cwd() + '/app/controllers'));
-app.use('/public', express.static(process.cwd() + '/public'));
-app.use('/common', express.static(process.cwd() + '/app/common'));
-
-app.use(session({
-	secret: 'secretClementine',
-	resave: false,
-	saveUninitialized: true
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-routes(app, passport);
+var db = mongoose.connection;
+  db.on('error', console.error.bind(console, 'database connection error'));
+  db.on('open', function() {
+    console.log('connected to MongoDB database: ' + database)
+  });
 
 var port = process.env.PORT || 8080;
 app.listen(port,  function () {
-	console.log('Node.js listening on port ' + port + '...');
+	console.log('Server is listening on port ' + port + '.');
 });
