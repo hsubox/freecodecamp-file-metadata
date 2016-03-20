@@ -4,18 +4,27 @@ require('dotenv').config(); // load .env variables
 
 var express = require('express');
 var app = express();
-var routes = require('./app/routes/routes.js');
-routes(app, process.env);
 
-var mongoose = require('mongoose');
-var database = process.env.MONGO_URI || ('mongodb://localhost:27017/search_history');
-mongoose.connect(database);
+var multer = require('multer');
+var upload = multer();
 
-var db = mongoose.connection;
-  db.on('error', console.error.bind(console, 'database connection error'));
-  db.on('open', function() {
-    console.log('connected to MongoDB database: ' + database)
-  });
+app.get('/', function (req, res) {
+  res.sendFile(process.cwd() + '/index.html');
+});
+
+app.post('/api/fileanalyse/', upload.single('0'), function (req, res, next) { // key is 0
+  if (req.file) {
+    res.send({
+      success: 'Updated Successfully',
+      fileSize: req.file.size,
+      mimeType: req.file.mimetype,
+      fileName: req.file.originalname,
+      encoding: req.file.encoding
+    });
+  } else {
+    res.statusText('ABORT MISSION.').send({});
+  }
+});
 
 var port = process.env.PORT || 8080;
 app.listen(port,  function () {

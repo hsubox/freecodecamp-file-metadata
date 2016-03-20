@@ -1,4 +1,4 @@
-Image Abstraction Layer - FreeCodeCamp API 
+File Metadata Microservice - FreeCodeCamp API 
 
-https://www.freecodecamp.com/challenges/image-search-abstraction-layer
+https://www.freecodecamp.com/challenges/file-metadata-microservice
 
